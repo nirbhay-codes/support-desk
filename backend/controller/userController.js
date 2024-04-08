@@ -70,9 +70,22 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc    Get current user
+// @route   /api/users/me
+// @access  Private
+const getMe = asyncHandler(async (req, res) => {
+  // At this point, the 'protect' middleware would have already set the current user to req.user
+  const user = {
+    id: req.user._id,
+    email: req.user.email,
+    name: req.user.name,
+  }
+  res.status(200).json(user)
+})
+
 // Generate token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' })
 }
 
-module.exports = { registerUser, loginUser }
+module.exports = { registerUser, loginUser, getMe }
