@@ -17,7 +17,14 @@ const protect = asyncHandler(async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-      // Get user based on id in the token and set the user to req.user
+      // ! Get user based on "id" in the token and set the user to "req.user"
+      // * NOTE: When you use User.findById(decoded.id) to find a user in the MongoDB
+      // * database, Mongoose understands that you are looking for a document with
+      // * the "_id" field matching the "decoded.id" value. Mongoose is able to handle
+      // * this transparently, and the resulting req.user object will have an "id" field
+      // * (not "_id") that corresponds to the "decoded.id" value. This is because
+      // * Mongoose maps the "_id" field to the "id" property in the returned document
+      // * when querying by "_id".
       req.user = await User.findById(decoded.id).select('-password')
 
       next()
