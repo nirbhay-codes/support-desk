@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getTickets } from '../features/tickets/ticketSlice'
+import Spinner from '../components/Spinner'
 import BackButton from '../components/BackButton'
 import TicketItem from '../components/TicketItem'
-import Spinner from '../components/Spinner'
 
 function Tickets() {
   const { tickets, isLoading } = useSelector((state) => state.tickets)

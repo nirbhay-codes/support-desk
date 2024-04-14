@@ -13,4 +13,4 @@ const TicketItem = ({ ticket }) => {
   )
 }
 
-export default TicketItem
+export default TicketItem 
