@@ -36,10 +36,14 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route path='/ticket/:ticketId'
-            element={<PrivateRoute>
-              <Ticket/>
-            </PrivateRoute>}/>
+            <Route
+              path='/ticket/:ticketId'
+              element={
+                <PrivateRoute>
+                  <Ticket />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </div>
       </Router>
