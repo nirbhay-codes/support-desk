@@ -26,6 +26,25 @@ export const createTicket = createAsyncThunk(
   }
 )
 
+export const closeTicket = createAsyncThunk(
+  'tickets/close',
+  async (ticketId, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await ticketService.closeTicket(ticketId, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
 // Get user ticket
 export const getTicket = createAsyncThunk(
   'tickets/get',
@@ -72,35 +91,30 @@ export const ticketSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createTicket.pending, (state) => {
-        state.isLoading = true
-      })
-      .addCase(createTicket.fulfilled, (state, action) => {
-        state.isLoading = false
-        state.ticket = action.payload
-      })
-      .addCase(createTicket.rejected, (state) => {
-        state.isLoading = false
-      })
+      // *In the specific case of createTicket, the component that dispatches 
+      // *the action might not necessarily need to update the ticket state in
+      // *the store immediately after creation. This is because the component 
+      // *is redirecting to the tickets page (/tickets).
+      // .addCase(createTicket.fulfilled, (state, action) => {
+      //   state.ticket = action.payload
+      // })
       .addCase(getTickets.pending, (state) => {
-        state.isLoading = true
+        // NOTE: clear single ticket on tickets page, this replaces need for
+        // loading state on individual ticket
+        state.ticket = null
       })
       .addCase(getTickets.fulfilled, (state, action) => {
-        state.isLoading = false
         state.tickets = action.payload
       })
-      .addCase(getTickets.rejected, (state) => {
-        state.isLoading = false
-      })
-      .addCase(getTicket.pending, (state) => {
-        state.isLoading = true
-      })
       .addCase(getTicket.fulfilled, (state, action) => {
-        state.isLoading = false
         state.ticket = action.payload
       })
-      .addCase(getTicket.rejected, (state) => {
-        state.isLoading = false
+      .addCase(closeTicket.fulfilled, (state, action) => {
+        state.ticket = action.payload
+        // *Need to also update the list of tickets with this updated ticket above
+        state.tickets = state.tickets.map((ticket) =>
+          ticket._id === action.payload._id ? action.payload : ticket
+        )
       })
   },
 })
